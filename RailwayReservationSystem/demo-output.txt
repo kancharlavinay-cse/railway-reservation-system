@@ -1,0 +1,9 @@
+=== AUTOMATED APPLICATION TEST ===
+Available seats BZA->VSKP: 32
+Booking created: 
+PNR 2465127853 | Train 12727 | BZA -> VSKP | Seat 1 | ?980.0 | CONFIRMED
+Same seat overlapping BZA->RJY available? false
+Same seat non-overlapping VSKP->HYB (not on train) route check: false
+Dijkstra BZA->VSKP: 280 km
+Cancellation: CANCELLED
+=== TEST COMPLETE: APPLICATION CORE RUNS ===

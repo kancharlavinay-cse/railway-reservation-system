@@ -1,0 +1,16 @@
+CREATE DATABASE IF NOT EXISTS railway_db;
+USE railway_db;
+CREATE TABLE users (passenger_id INT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(100) NOT NULL,phone VARCHAR(10) NOT NULL UNIQUE,email VARCHAR(100) NOT NULL);
+CREATE TABLE admins (admin_id INT AUTO_INCREMENT PRIMARY KEY,username VARCHAR(50) UNIQUE NOT NULL,password VARCHAR(255) NOT NULL);
+CREATE TABLE stations (station_id INT AUTO_INCREMENT PRIMARY KEY,station_code VARCHAR(10) UNIQUE NOT NULL,station_name VARCHAR(100) NOT NULL);
+CREATE TABLE trains (train_number INT PRIMARY KEY,train_name VARCHAR(100) NOT NULL);
+CREATE TABLE train_routes (route_id INT AUTO_INCREMENT PRIMARY KEY,train_number INT NOT NULL,station_id INT NOT NULL,stop_number INT NOT NULL,arrival_time TIME,departure_time TIME,distance_from_source INT DEFAULT 0,FOREIGN KEY(train_number) REFERENCES trains(train_number),FOREIGN KEY(station_id) REFERENCES stations(station_id),UNIQUE(train_number,stop_number));
+CREATE TABLE seats (seat_id INT AUTO_INCREMENT PRIMARY KEY,train_number INT NOT NULL,coach_number VARCHAR(10) NOT NULL,seat_number INT NOT NULL,seat_class VARCHAR(30) NOT NULL,FOREIGN KEY(train_number) REFERENCES trains(train_number),UNIQUE(train_number,coach_number,seat_number));
+CREATE TABLE bookings (booking_id INT AUTO_INCREMENT PRIMARY KEY,passenger_id INT NOT NULL,train_number INT NOT NULL,source_station_id INT NOT NULL,destination_station_id INT NOT NULL,seats_booked INT NOT NULL,pnr VARCHAR(20) UNIQUE NOT NULL,booking_status VARCHAR(20) NOT NULL,booking_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(passenger_id) REFERENCES users(passenger_id),FOREIGN KEY(train_number) REFERENCES trains(train_number),FOREIGN KEY(source_station_id) REFERENCES stations(station_id),FOREIGN KEY(destination_station_id) REFERENCES stations(station_id));
+CREATE TABLE booking_seats (booking_id INT NOT NULL,seat_id INT NOT NULL,PRIMARY KEY(booking_id,seat_id),FOREIGN KEY(booking_id) REFERENCES bookings(booking_id),FOREIGN KEY(seat_id) REFERENCES seats(seat_id));
+CREATE TABLE payments (payment_id INT AUTO_INCREMENT PRIMARY KEY,booking_id INT NOT NULL,amount DECIMAL(10,2) NOT NULL,payment_method VARCHAR(30) NOT NULL,payment_status VARCHAR(20) NOT NULL,payment_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(booking_id) REFERENCES bookings(booking_id));
+CREATE TABLE waiting_list (waiting_id INT AUTO_INCREMENT PRIMARY KEY,passenger_id INT NOT NULL,train_number INT NOT NULL,source_station_id INT NOT NULL,destination_station_id INT NOT NULL,seats_requested INT NOT NULL,status VARCHAR(20) NOT NULL DEFAULT 'WAITING',created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(passenger_id) REFERENCES users(passenger_id),FOREIGN KEY(train_number) REFERENCES trains(train_number));
+CREATE INDEX idx_booking_passenger ON bookings(passenger_id);
+CREATE INDEX idx_booking_train ON bookings(train_number);
+CREATE INDEX idx_booking_pnr ON bookings(pnr);
+CREATE INDEX idx_route_train ON train_routes(train_number);
